@@ -1,17 +1,19 @@
+%include "lib.inc"
 %include "words.inc"
 
 %define BUFFER_SIZE 256
 %define BUFFER_SIZE_STR "256"
 
-extern exit, string_length, print_string, print_newline
-extern read_word
-extern find_word, get_value
+%define stderr 2
+%define write_call 1
  
+extern find_word, get_value
+
 global _start
 
-section .data
-input_err: db "Invalid input. Input string length must be less than ", BUFFER_SIZE_STR, 0
-key_err: db "Invalid key. No such key", 0
+section .rodata
+input_err: db "Invalid input. Input string length must be less than ", BUFFER_SIZE_STR, `\n`, 0
+key_err: db "Invalid key. No such key", `\n`, 0
     
 section .text
 
@@ -24,8 +26,8 @@ print_string_stderr:
    
     mov rsi, rdi       ; Вывод строки в stderr
     mov rdx, rax
-    mov rax, 1
-    mov rdi, 2
+    mov rax, write_call
+    mov rdi, stderr
     syscall
     
     ret
@@ -61,13 +63,11 @@ _start:
     .print_key_error:            ; Ошибка - не найден ключ
         mov rdi, key_err         ; Вывод сообщения об ошибке в stderr
         call print_string_stderr
-        call print_newline
         mov rdi, 1               ; Установка статуса ошибки и выход
         call exit
     
     .print_input_error:          ; Ошибка - неверный ввод данных
         mov rdi, input_err       ; Вывод сообщения в stderr
         call print_string_stderr
-        call print_newline
         mov rdi, 1               ; Установка статуса ошибки и выход
         call exit

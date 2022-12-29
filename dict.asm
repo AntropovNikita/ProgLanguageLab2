@@ -1,4 +1,4 @@
-extern string_length, string_equals
+%include "lib.inc"
 
 global find_word, get_value
 
